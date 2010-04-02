@@ -174,9 +174,12 @@ status_t Layer::setBuffers( uint32_t w, uint32_t h,
     mNeedsBlending = (info.h_alpha - info.l_alpha) > 0;
 
     // we use the red index
+#if 0
     int displayRedSize = displayInfo.getSize(PixelFormatInfo::INDEX_RED);
     int layerRedsize = info.getSize(PixelFormatInfo::INDEX_RED);
     mNeedsDithering = layerRedsize > displayRedSize;
+#endif
+    mNeedsDithering = false;
 
     mSurface = new SurfaceLayer(mFlinger, this);
     return NO_ERROR;
