@@ -684,7 +684,7 @@ void SurfaceFlinger::computeVisibleRegions(
             const Region oldVisibleRegion = layer->visibleRegionScreen;
             const Region oldCoveredRegion = layer->coveredRegionScreen;
             const Region oldExposed = oldVisibleRegion - oldCoveredRegion;
-            dirty = (visibleRegion&oldCoveredRegion) | (newExposed-oldExposed);
+            dirty = (newExposed-oldExposed);
         }
         dirty.subtractSelf(aboveOpaqueLayers);
 
