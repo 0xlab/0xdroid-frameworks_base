@@ -652,7 +652,10 @@ void SurfaceFlinger::computeVisibleRegions(
         coveredRegion = aboveCoveredLayers.intersect(visibleRegion);
 
         // Update aboveCoveredLayers for next (lower) layer
-        aboveCoveredLayers.orSelf(visibleRegion);
+        // A layer covers another only when it is visible
+        if (!(s.flags & ISurfaceComposer::eLayerHidden) && s.alpha) {
+            aboveCoveredLayers.orSelf(visibleRegion);
+        }
 
         // subtract the opaque region covered by the layers above us
         visibleRegion.subtractSelf(aboveOpaqueLayers);
