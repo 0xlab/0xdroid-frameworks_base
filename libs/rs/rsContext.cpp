@@ -80,8 +80,7 @@ void Context::initEGL(bool useGL2)
 
     if (useGL2) {
         configAttribsPtr[0] = EGL_RENDERABLE_TYPE;
-        configAttribsPtr[1] = EGL_OPENGL_ES2_BIT;
-        configAttribsPtr += 2;
+        configAttribsPtr++;
     }
 
     if (mUseDepth) {
@@ -510,7 +509,7 @@ void Context::setSurface(uint32_t w, uint32_t h, ANativeWindow *sur)
         if (!mEGL.mContext) {
             first = true;
             pthread_mutex_lock(&gInitMutex);
-            initEGL(true);
+            initEGL(checkVersion2_0());
             pthread_mutex_unlock(&gInitMutex);
         }
 
