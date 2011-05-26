@@ -23,6 +23,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.content.res.XmlResourceParser;
 import android.graphics.drawable.Drawable;
+import android.graphics.Rect;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
@@ -144,6 +145,11 @@ public class Keyboard {
     /** Number of key widths from current touch point to search for nearest keys. */
     private static float SEARCH_DISTANCE = 1.8f;
 
+    /** KeyboardView has correction for TouchEvent, so we move coverage as well
+     * @hide 
+     */
+    public static int sViewVCorrection  = 0;
+
     /**
      * Container for keys in the keyboard. All keys in a row are at the same Y-coordinate. 
      * Some of the key size defaults can be overridden per row from what the {@link Keyboard}
@@ -256,6 +262,20 @@ public class Keyboard {
         public CharSequence text;
         /** Popup characters */
         public CharSequence popupCharacters;
+
+        /** A Rectangle to represent coverage of the key
+	 * @hide
+	 */
+        public Rect mCoverage;
+
+        /** All we know is the size of the key and draw a background bitmap for it.
+         * Unfortunately, art designer usually draw a background with transparent margin.
+         * This is workaround to shrink to coverage of key
+	 * @hide
+	 */
+        public final static int sPaddingH = 5 ;
+	/** @hide */
+        public final static int sPaddingV = 5 ;
         
         /** 
          * Flags that specify the anchoring to edges of the keyboard for detecting touch events
@@ -344,6 +364,7 @@ public class Keyboard {
             a = res.obtainAttributes(Xml.asAttributeSet(parser),
                     com.android.internal.R.styleable.Keyboard_Key);
             this.x += gap;
+            updateCoverage();
             TypedValue codesValue = new TypedValue();
             a.getValue(com.android.internal.R.styleable.Keyboard_Key_codes, 
                     codesValue);
@@ -384,6 +405,17 @@ public class Keyboard {
                 codes = new int[] { label.charAt(0) };
             }
             a.recycle();
+        }
+
+	/** @hide */
+        public void updateCoverage() {
+            if (mCoverage == null) {
+                mCoverage = new Rect();
+            }
+            mCoverage.set(x + sPaddingH
+                    , y + sPaddingV + sViewVCorrection
+                    , x + width - sPaddingH
+                    , y + height - sPaddingV + sViewVCorrection);
         }
         
         /**
@@ -439,18 +471,8 @@ public class Keyboard {
          * the key.
          */
         public boolean isInside(int x, int y) {
-            boolean leftEdge = (edgeFlags & EDGE_LEFT) > 0;
-            boolean rightEdge = (edgeFlags & EDGE_RIGHT) > 0;
-            boolean topEdge = (edgeFlags & EDGE_TOP) > 0;
-            boolean bottomEdge = (edgeFlags & EDGE_BOTTOM) > 0;
-            if ((x >= this.x || (leftEdge && x <= this.x + this.width)) 
-                    && (x < this.x + this.width || (rightEdge && x >= this.x)) 
-                    && (y >= this.y || (topEdge && y <= this.y + this.height))
-                    && (y < this.y + this.height || (bottomEdge && y >= this.y))) {
-                return true;
-            } else {
-                return false;
-            }
+            boolean in = mCoverage.contains(x, y);
+            return mCoverage.contains(x, y);
         }
 
         /**
@@ -570,6 +592,7 @@ public class Keyboard {
             key.y = y;
             key.label = String.valueOf(c);
             key.codes = new int[] { c };
+            key.updateCoverage();
             column++;
             x += key.width + key.gap;
             mKeys.add(key);

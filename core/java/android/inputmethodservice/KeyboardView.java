@@ -295,6 +295,7 @@ public class KeyboardView extends View implements View.OnClickListener {
                 break;
             case com.android.internal.R.styleable.KeyboardView_verticalCorrection:
                 mVerticalCorrection = a.getDimensionPixelOffset(attr, 0);
+                Keyboard.sViewVCorrection = mVerticalCorrection;
                 break;
             case com.android.internal.R.styleable.KeyboardView_keyPreviewLayout:
                 previewLayout = a.getResourceId(attr, 0);
@@ -738,43 +739,12 @@ public class KeyboardView extends View implements View.OnClickListener {
         int closestKey = NOT_A_KEY;
         int closestKeyDist = mProximityThreshold + 1;
         java.util.Arrays.fill(mDistances, Integer.MAX_VALUE);
-        int [] nearestKeyIndices = mKeyboard.getNearestKeys(x, y);
-        final int keyCount = nearestKeyIndices.length;
+        final int keyCount = keys.length;
         for (int i = 0; i < keyCount; i++) {
-            final Key key = keys[nearestKeyIndices[i]];
+            final Key key = keys[i];
             int dist = 0;
-            boolean isInside = key.isInside(x,y);
-            if (isInside) {
-                primaryIndex = nearestKeyIndices[i];
-            }
-
-            if (((mProximityCorrectOn 
-                    && (dist = key.squaredDistanceFrom(x, y)) < mProximityThreshold) 
-                    || isInside)
-                    && key.codes[0] > 32) {
-                // Find insertion point
-                final int nCodes = key.codes.length;
-                if (dist < closestKeyDist) {
-                    closestKeyDist = dist;
-                    closestKey = nearestKeyIndices[i];
-                }
-                
-                if (allKeys == null) continue;
-                
-                for (int j = 0; j < mDistances.length; j++) {
-                    if (mDistances[j] > dist) {
-                        // Make space for nCodes codes
-                        System.arraycopy(mDistances, j, mDistances, j + nCodes,
-                                mDistances.length - j - nCodes);
-                        System.arraycopy(allKeys, j, allKeys, j + nCodes,
-                                allKeys.length - j - nCodes);
-                        for (int c = 0; c < nCodes; c++) {
-                            allKeys[j + c] = key.codes[c];
-                            mDistances[j + c] = dist;
-                        }
-                        break;
-                    }
-                }
+            if (key.isInside(x, y)) {
+                primaryIndex = i;
             }
         }
         if (primaryIndex == NOT_A_KEY) {
