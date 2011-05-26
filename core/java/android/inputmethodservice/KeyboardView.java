@@ -827,6 +827,7 @@ public class KeyboardView extends View implements View.OnClickListener {
     }
     
     private void showPreview(int keyIndex) {
+/*
         int oldKeyIndex = mCurrentKeyIndex;
         final PopupWindow previewPopup = mPreviewPopup;
         
@@ -864,6 +865,7 @@ public class KeyboardView extends View implements View.OnClickListener {
                 }
             }
         }
+ */
     }
     
     private void showKey(final int keyIndex) {
@@ -1172,7 +1174,7 @@ public class KeyboardView extends View implements View.OnClickListener {
                 mDownKey = keyIndex;
                 mDownTime = me.getEventTime();
                 mLastMoveTime = mDownTime;
-                checkMultiTap(eventTime, keyIndex);
+                // checkMultiTap(eventTime, keyIndex);
                 mKeyboardActionListener.onPress(keyIndex != NOT_A_KEY ? 
                         mKeys[keyIndex].codes[0] : 0);
                 if (mCurrentKey >= 0 && mKeys[mCurrentKey].repeatable) {
