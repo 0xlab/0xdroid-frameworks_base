@@ -111,6 +111,10 @@ LOCAL_LDLIBS := -lpthread -ldl
 LOCAL_MODULE:= libRS
 LOCAL_MODULE_TAGS := optional
 
+ifeq ($(strip $(TARGET_ARCH_VARIANT)),armv6-vfp)
+	LOCAL_CFLAGS += -mno-thumb
+endif
+
 include $(BUILD_SHARED_LIBRARY)
 
 # include the java examples
