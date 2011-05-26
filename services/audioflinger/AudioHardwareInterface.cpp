@@ -74,6 +74,9 @@ AudioHardwareInterface* AudioHardwareInterface::create()
     char value[PROPERTY_VALUE_MAX];
 
 #ifdef GENERIC_AUDIO
+#ifdef BOARD_AUDIO
+#error "Conflict! GENERIC_AUDIO and BOARD_AUDIO could not defined in the same time."
+#endif
     hw = new AudioHardwareGeneric();
 #else
     // if running in emulation - use the emulator driver

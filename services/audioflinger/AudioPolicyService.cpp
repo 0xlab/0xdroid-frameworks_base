@@ -74,6 +74,9 @@ AudioPolicyService::AudioPolicyService()
     mAudioCommandThread = new AudioCommandThread(String8("ApmCommandThread"));
 
 #if (defined GENERIC_AUDIO) || (defined AUDIO_POLICY_TEST)
+#ifdef BOARD_AUDIO
+#error "Conflict! GENERIC_AUDIO and BOARD_AUDIO could not defined in the same time."
+#endif
     mpPolicyManager = new AudioPolicyManagerBase(this);
     LOGV("build for GENERIC_AUDIO - using generic audio policy");
 #else

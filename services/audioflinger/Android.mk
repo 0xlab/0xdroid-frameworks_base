@@ -3,6 +3,11 @@ LOCAL_PATH:= $(call my-dir)
 #AUDIO_POLICY_TEST := true
 #ENABLE_AUDIO_DUMP := true
 
+# Known libaudio implementation
+ifeq ($(BOARD_USES_ALSA_AUDIO),true)
+BOARD_USES_GENERIC_AUDIO := false
+endif
+
 include $(CLEAR_VARS)
 
 
@@ -30,6 +35,8 @@ LOCAL_SHARED_LIBRARIES := \
 
 ifeq ($(strip $(BOARD_USES_GENERIC_AUDIO)),true)
   LOCAL_CFLAGS += -DGENERIC_AUDIO
+else
+  LOCAL_CFLAGS += -DBOARD_AUDIO
 endif
 
 LOCAL_MODULE:= libaudiointerface
@@ -95,6 +102,7 @@ ifeq ($(strip $(BOARD_USES_GENERIC_AUDIO)),true)
   LOCAL_CFLAGS += -DGENERIC_AUDIO
 else
   LOCAL_SHARED_LIBRARIES += libaudio libaudiopolicy
+  LOCAL_CFLAGS += -DBOARD_AUDIO
 endif
 
 ifeq ($(TARGET_SIMULATOR),true)
