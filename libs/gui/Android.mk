@@ -18,6 +18,8 @@ LOCAL_SHARED_LIBRARIES := \
 
 LOCAL_MODULE:= libgui
 
+LOCAL_CFLAGS += -O0
+
 ifeq ($(TARGET_SIMULATOR),true)
     LOCAL_LDLIBS += -lpthread
 endif
